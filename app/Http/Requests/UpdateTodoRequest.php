@@ -35,24 +35,7 @@ class UpdateTodoRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(
-            response()->json([
-                'code' => JsonResponse::HTTP_UNPROCESSABLE_ENTITY,
-                'status' => 'failed',
-                'errors' => $this->getErrors($validator->errors()),
-            ], JsonResponse::HTTP_UNPROCESSABLE_ENTITY)
-        );
-    }
-
-
-    /**
-    * Transform array to object validation errors
-    * 
-    * @param  mixed $errors
-    * @return object
-    */
-    private function getErrors($errors)
-    {
-        return collect($errors)
-                ->map(fn($error) => $error[0]);
+            $this->unprocessableResponse($validator->errors(), 'Validation failed.')
+        );    
     }
 }

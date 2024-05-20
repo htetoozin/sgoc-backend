@@ -12,15 +12,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use App\Models\Todo;
 
+
 class TodoController extends Controller
 {
-    /**
-     * __construct
-     *
-     * @return void
-     */
     public function __construct(
-        protected TodoRepository $todoRepository,
+        protected TodoRepository $todoRepository
     ) {
     }
 
@@ -31,84 +27,88 @@ class TodoController extends Controller
     {
         $todos = TodoResource::collection($this->todoRepository->getTodos());
 
-        return response()->json([
-            'code' => Response::HTTP_OK,
-            'status'    => 'success',
-            'message' => 'Todos lists',
-            'data' => $todos
-        ]);
+        return $this->successResponse($todos, 'Todos lists.');
     }
 
     /**
      * Store a newly created resource in storage.
+     * 
+     * @param request
      */
     public function store(StoreTodoRequest $request)
     {
         $data = $request->validated();
 
-        $todo = $this->todoRepository->createTodo($data);
+        $todo = new TodoResource($this->todoRepository->createTodo($data));
 
-        return new TodoResource($todo);
+        return $this->successResponse($todo, 'Todo created successfully.');
+
+       
     }
 
     /**
      * Display the specified resource.
+     * 
+     * @param todoId
      */
     public function show($todoId)
     {
-        $todo = $this->todoRepository->getTodo($todoId);
+        $todo = $this->getTodo($todoId);
 
-        $todo = $todo ? new TodoResource($todo) : null;
+        if(!$todo){
+           return $this->notFoundResponse(null, 'Todo not found.');
+        }
 
-        return response()->json([
-            'code' => Response::HTTP_OK,
-            'status'    => 'success',
-            'message' => 'Todo',
-            'data' => $todo
-        ]);
+        return $this->successResponse(new TodoResource($todo), 'Todo.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Todo $todo)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
+     * 
+     * @param $request, todoId
      */
-    public function update(UpdateTodoRequest $request, int $todoId)
+    public function update(UpdateTodoRequest $request, int $todoId): JsonResponse
     {
-        $todo = $this->todoRepository->getTodo($todoId);
-        
-        $data = $request->validated();
+        $todo = $this->getTodo($todoId);
 
-        if (!$todo) {
-            return response()->json([
-                'code' => Response::HTTP_NOT_FOUND,
-                'status'    => 'failed',
-                'message' => 'Todo not found.',
-                'data' => $todo
-            ],  Response::HTTP_NOT_FOUND);
+        if(!$todo){
+           return $this->notFoundResponse(null, 'Todo not found.');
         }
 
+        $data = $request->validated();
         $todo = new TodoResource($this->todoRepository->updateTodo($todoId, $data));
 
-        return response()->json([
-            'code' => Response::HTTP_OK,
-            'status'    => 'success',
-            'message' => 'Todo',
-            'data' => $todo
-        ]);
+        return $this->successResponse(new TodoResource($todo), 'Todo.');
     }
 
     /**
      * Remove the specified resource from storage.
+     * 
+     * @param $todoId
      */
-    public function destroy(Todo $todo)
+    public function destroy($todoId)
     {
-        //
+        $todo = $this->getTodo($todoId);
+
+        if(!$todo){
+           return $this->notFoundResponse(null, 'Todo not found.');
+        }
+
+       $this->todoRepository->deleteTodo($todoId);
+
+       return $this->successResponse(null, 'Todo deleted successfully.');
+
+    }
+
+
+    /**
+    * Get todo item from TodoRepository 
+    * 
+    * @param $id
+    */
+    private function getTodo($id): ?Todo
+    {
+        return $this->todoRepository->getTodo($id);
     }
 }

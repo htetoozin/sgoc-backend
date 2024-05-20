@@ -51,6 +51,6 @@ class TodoRepository implements TodoRepositoryInterface
     */
     public function deleteTodo($todoId): void 
     {
-        Todo::delete($todo);
+        Todo::find($todoId)->delete();
     }
 }
