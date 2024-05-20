@@ -19,7 +19,7 @@ class TodoRepository implements TodoRepositoryInterface
     * Get a todo.
     * @param $todoId
     */
-    public function getTodo($todoId): Todo
+    public function getTodo($todoId): ?Todo
     {
         return Todo::find($todoId);
     }

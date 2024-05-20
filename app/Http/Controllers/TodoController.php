@@ -32,7 +32,8 @@ class TodoController extends Controller
         $todos = TodoResource::collection($this->todoRepository->getTodos());
 
         return response()->json([
-            'status' => Response::HTTP_OK, 
+            'code' => Response::HTTP_OK, 
+            'status'    => 'success',
             'message' => 'Todos lists',
             'data' => $todos
         ]);
@@ -49,9 +50,18 @@ class TodoController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Todo $todo)
+    public function show($todoId)
     {
-        //
+        $todo = $this->todoRepository->getTodo($todoId);
+
+        $todo = $todo ? new TodoResource($todo) : null;
+        
+        return response()->json([
+            'code' => Response::HTTP_OK, 
+            'status'    => 'success',
+            'message' => 'Todo',
+            'data' => $todo
+        ]);
     }
 
     /**
