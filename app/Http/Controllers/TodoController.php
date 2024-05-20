@@ -32,7 +32,7 @@ class TodoController extends Controller
         $todos = TodoResource::collection($this->todoRepository->getTodos());
 
         return response()->json([
-            'code' => Response::HTTP_OK, 
+            'code' => Response::HTTP_OK,
             'status'    => 'success',
             'message' => 'Todos lists',
             'data' => $todos
@@ -59,9 +59,9 @@ class TodoController extends Controller
         $todo = $this->todoRepository->getTodo($todoId);
 
         $todo = $todo ? new TodoResource($todo) : null;
-        
+
         return response()->json([
-            'code' => Response::HTTP_OK, 
+            'code' => Response::HTTP_OK,
             'status'    => 'success',
             'message' => 'Todo',
             'data' => $todo
@@ -79,9 +79,29 @@ class TodoController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTodoRequest $request, Todo $todo)
+    public function update(UpdateTodoRequest $request, int $todoId)
     {
-        //
+        $todo = $this->todoRepository->getTodo($todoId);
+        
+        $data = $request->validated();
+
+        if (!$todo) {
+            return response()->json([
+                'code' => Response::HTTP_NOT_FOUND,
+                'status'    => 'failed',
+                'message' => 'Todo not found.',
+                'data' => $todo
+            ],  Response::HTTP_NOT_FOUND);
+        }
+
+        $todo = new TodoResource($this->todoRepository->updateTodo($todoId, $data));
+
+        return response()->json([
+            'code' => Response::HTTP_OK,
+            'status'    => 'success',
+            'message' => 'Todo',
+            'data' => $todo
+        ]);
     }
 
     /**

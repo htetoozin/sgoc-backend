@@ -8,9 +8,9 @@ interface TodoRepositoryInterface
 
     public function getTodo($todoId);
 
-    public function createTodo(array $todos);
+    public function createTodo(array $data);
 
-    public function updateTodo($todoId, array $todos); 
+    public function updateTodo(int $todoId, array $data); 
 
     public function deleteTodo($todoId); 
 }

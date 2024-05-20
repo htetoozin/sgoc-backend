@@ -26,20 +26,23 @@ class TodoRepository implements TodoRepositoryInterface
 
     /**
     * Store a newly created todo.
-    * @param $todos
+    * @param $data
     */
-    public function createTodo(array $todos): Todo
+    public function createTodo(array $data): Todo
     {
-        return Todo::create($todos);
+        return Todo::create($data);
     }
 
     /**
     * Update a todo with new requests.
-    * @param $todoId, $todos
+    * @param $todoId, $data
     */
-    public function updateTodo($todoId, array $todos): Todo 
+    public function updateTodo(int $todoId, array $data) 
     {
-        return Todo::whereId($todoId)->update($todos);
+        $todo = Todo::find($todoId);
+        $todo->update($data);
+        
+        return $todo;
     }
 
     /**
