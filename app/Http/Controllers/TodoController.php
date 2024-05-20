@@ -2,26 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use App\Http\Requests\StoreTodoRequest;
 use App\Http\Requests\UpdateTodoRequest;
+use App\Repositories\TodoRepository;
+use App\Http\Resources\TodoResource;
+use Illuminate\Support\Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use App\Models\Todo;
 
 class TodoController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * __construct
+     *
+     * @return void
      */
-    public function index()
-    {
-        //
+    public function __construct(
+        protected TodoRepository $todoRepository,
+    ) {
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Display a listing of the resource.
      */
-    public function create()
+    public function index(): JsonResponse
     {
-        //
+        $todos = TodoResource::collection($this->todoRepository->getTodos());
+
+        return response()->json([
+            'status' => Response::HTTP_OK, 
+            'message' => 'Todos lists',
+            'data' => $todos
+        ]);
     }
 
     /**
@@ -29,7 +43,7 @@ class TodoController extends Controller
      */
     public function store(StoreTodoRequest $request)
     {
-        //
+        $attributes = $request->validated();
     }
 
     /**

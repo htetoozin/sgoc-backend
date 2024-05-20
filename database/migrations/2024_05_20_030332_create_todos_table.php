@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->boolean('is_active')->default(false);
+            $table->enum('is_active', [true, false])->default(false);
             $table->timestamps();
         });
     }
