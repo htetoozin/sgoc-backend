@@ -19,6 +19,7 @@ class TodoResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
+            'is_active' => $this->is_active,
             'created_at' => Carbon::parse($this->created_at)->format('d-m-Y g:i A')
         ];
     }
